@@ -35,7 +35,7 @@ jobs:
         run: bandit -r pentester
 
       - name: SCA (pip-audit)
-        run: pip-audit
+        run: pip-audit -r requirements.txt
 
       - name: Tests
         run: pytest
