@@ -1,11 +1,45 @@
 version: 2
 updates:
-  - package-ecosystem: pip
+  # Python dependencies via pip
+  - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: weekly
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps):"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "security"
+    reviewers:
+      - "catownsley"
+    # Combine all minor and patch bumps into a single weekly pull request.
+    # Major bumps stay out of the group so they arrive individually for review.
+    groups:
+      python_minor_and_patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
-  - package-ecosystem: github-actions
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: weekly
+      interval: "weekly"
+      day: "monday"
+      time: "04:30"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(ci):"
+      include: "scope"
+    labels:
+      - "ci/cd"
+    groups:
+      github_actions_all:
+        patterns:
+          - "*"

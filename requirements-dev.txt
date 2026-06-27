@@ -1,0 +1,11 @@
+-r requirements.txt
+
+# Development and security tooling
+ruff
+black
+mypy
+pytest
+bandit
+pip-audit
+pip-tools
+pre-commit
