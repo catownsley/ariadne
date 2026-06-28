@@ -104,8 +104,4 @@ The piano piece and the short film are my own original composition, performance,
 
 ## Watch and read more
 
-The short film is on YouTube.
-
-https://youtu.be/5tpyjqRoxCQ
-
-The piano score and the MIDI are in the repository, the score at [docs/ariadne-score.pdf](docs/ariadne-score.pdf), and the full project and this essay are at https://github.com/catownsley/ariadne.
+The short film, the piano score, and the music are gathered on [the art page](ART.md), and the full project and this essay are in [the repository](https://github.com/catownsley/ariadne).
