@@ -2,12 +2,7 @@
 
 ## Overview
 
-An LLM planner runs an authorized penetration test end to end. It reasons over a
-target, calls tools to recon, probe, and confirm vulnerabilities, and reports
-what it finds. Every action passes through a safety layer that enforces the
-authorized scope in code, not in a prompt, so the agent physically cannot act
-outside the rules of engagement. The design is organized around four properties:
-safe, contextual, effective, and concurrent.
+An LLM planner runs an authorized penetration test end to end. It reasons over a target, calls tools to recon, probe, and confirm vulnerabilities, and reports what it finds. Every action passes through a safety layer that enforces the authorized scope in code, not in a prompt, so the agent physically cannot act outside the rules of engagement. The design is organized around four properties: safe, contextual, effective, and concurrent.
 
 ## Architecture
 
@@ -78,8 +73,7 @@ flowchart TD
 
 ## Safety model (the lead concern)
 
-Because this is a tool that attacks systems, safety is the hard constraint, not a
-feature.
+Because this is a tool that attacks systems, safety is the hard constraint, not a feature.
 
 * Scope is enforced at the tool and network layer, in code, never only in the
   prompt, because a prompt boundary can be jailbroken.
@@ -114,9 +108,7 @@ Full development cycle (the vision):
 
 ## Scaling to multiple agents
 
-The single agent loop becomes a fleet under an orchestrator. Three concerns
-drive that design: how to marshal many agents, how to keep each one least
-privileged, and how to validate the data flowing between them.
+The single agent loop becomes a fleet under an orchestrator. Three concerns drive that design: how to marshal many agents, how to keep each one least privileged, and how to validate the data flowing between them.
 
 ```mermaid
 flowchart TD
@@ -135,8 +127,7 @@ flowchart TD
 
 ### Marshalling several agents
 
-An orchestrator decomposes the engagement into independent units (per host, per
-endpoint cluster, per vuln class) and fans them out. Two shapes:
+An orchestrator decomposes the engagement into independent units (per host, per endpoint cluster, per vuln class) and fans them out. Two shapes:
 
 * Worker pool: dispatch units to many copies of the same agent, run concurrently
   under a bounded semaphore, the same pattern as our tool concurrency one level
@@ -145,37 +136,17 @@ endpoint cluster, per vuln class) and fans them out. Two shapes:
   of exploit agents, confirmed candidates go to validation agents, a reporter
   aggregates.
 
-Coordination is a shared task queue plus one canonical context the orchestrator
-owns. Workers get a scoped slice and write back through a controlled interface,
-never directly. Concurrency is bounded so the fleet does not deny service to the
-target or exhaust the token budget, and a shared seen set dedups work.
+Coordination is a shared task queue plus one canonical context the orchestrator owns. Workers get a scoped slice and write back through a controlled interface, never directly. Concurrency is bounded so the fleet does not deny service to the target or exhaust the token budget, and a shared seen set dedups work.
 
 ### Least privilege per agent
 
-Each agent gets only the tools and scope it needs, enforced in code, not the
-prompt. A recon agent gets read only discover and request, not the exploit
-probes. A reporter gets no network tools at all. Mechanism: instead of one shared
-Toolbox, give each agent its own Toolbox with its own ScopeGuard, scoped tighter
-than the global rules, so a worker assigned one host can only touch that host.
-Credentials follow the same rule: the orchestrator holds the key, workers get
-short lived scoped tokens or call through it. High impact actions sit behind an
-approval gate that only certain agents may even request.
+Each agent gets only the tools and scope it needs, enforced in code, not the prompt. A recon agent gets read only discover and request, not the exploit probes. A reporter gets no network tools at all. Mechanism: instead of one shared Toolbox, give each agent its own Toolbox with its own ScopeGuard, scoped tighter than the global rules, so a worker assigned one host can only touch that host. Credentials follow the same rule: the orchestrator holds the key, workers get short lived scoped tokens or call through it. High impact actions sit behind an approval gate that only certain agents may even request.
 
-Each agent also gets its own budgets, a request budget, a token and cost budget,
-and a step ceiling, allocated as a slice of the engagement total, so one worker
-cannot drain the whole run. For isolation stronger than the in code check alone,
-each agent can run in its own container with network egress filtering, which
-enforces the same scope at the operating system and network layer as defense in
-depth, so the boundary holds even if the in code check is ever bypassed. Every
-action an agent takes is logged with that agent's identity, so the audit trail
-attributes each request to a specific agent, which gives accountability and a way
-to spot a misbehaving one.
+Each agent also gets its own budgets, a request budget, a token and cost budget, and a step ceiling, allocated as a slice of the engagement total, so one worker cannot drain the whole run. For isolation stronger than the in code check alone, each agent can run in its own container with network egress filtering, which enforces the same scope at the operating system and network layer as defense in depth, so the boundary holds even if the in code check is ever bypassed. Every action an agent takes is logged with that agent's identity, so the audit trail attributes each request to a specific agent, which gives accountability and a way to spot a misbehaving one.
 
 ### Validation between agents
 
-In a fleet, one agent's output is the next one's input, and target responses flow
-through both. Two threats: malformed data breaking the pipeline, and prompt
-injection propagating between agents.
+In a fleet, one agent's output is the next one's input, and target responses flow through both. Two threats: malformed data breaking the pipeline, and prompt injection propagating between agents.
 
 * Strict schemas at every boundary. Inter agent handoffs and tool outputs validate
   against a schema before they are accepted. Our `Context.add_finding` is exactly
@@ -190,7 +161,4 @@ injection propagating between agents.
 * Sanitize and bound at each hop: type and range checks, length caps, strip
   control characters, before passing the value on.
 
-These controls map to recognized frameworks. Least privilege per agent is NIST
-AC-6, trusting no component implicitly is a zero trust stance applied between your
-own agents, and the risks being closed are OWASP LLM07 insecure tool and plugin
-design and OWASP LLM08 excessive agency.
+These controls map to recognized frameworks. Least privilege per agent is NIST AC-6, trusting no component implicitly is a zero trust stance applied between your own agents, and the risks being closed are OWASP LLM07 insecure tool and plugin design and OWASP LLM08 excessive agency.

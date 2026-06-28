@@ -1,11 +1,6 @@
 # Threat Model
 
-This document models Ariadne, an autonomous AI penetration tester, for security
-review. Ariadne is not a web service, so the threat surface is not an inbound API.
-It is an agent surface, where a language model plans actions, calls tools, and reads
-data from a target that is hostile by definition. The frames used here are STRIDE for
-the classic categories, the OWASP Top 10 for LLM Applications for the model and agent
-specific risks, and MITRE ATLAS for the adversarial machine learning techniques.
+This document models Ariadne, an autonomous AI penetration tester, for security review. Ariadne is not a web service, so the threat surface is not an inbound API. It is an agent surface, where a language model plans actions, calls tools, and reads data from a target that is hostile by definition. The frames used here are STRIDE for the classic categories, the OWASP Top 10 for LLM Applications for the model and agent specific risks, and MITRE ATLAS for the adversarial machine learning techniques.
 
 ## Architecture and trust boundaries
 
@@ -74,9 +69,7 @@ flowchart LR
 
 ## OWASP Top 10 for LLM Applications
 
-This is the core of the model, because these are the risks specific to an LLM driven
-agent. Each row names the risk, the control that exists in code today, and the planned
-hardening where the control is partial.
+This is the core of the model, because these are the risks specific to an LLM driven agent. Each row names the risk, the control that exists in code today, and the planned hardening where the control is partial.
 
 | Risk | Threat to Ariadne | Control today | Status |
 |---|---|---|---|
@@ -93,13 +86,7 @@ hardening where the control is partial.
 
 ## MITRE ATLAS techniques
 
-The adversary here is the target attempting to subvert the agent through the data it
-returns. The relevant ATLAS techniques are LLM Prompt Injection, where the target
-embeds instructions in its response, LLM Jailbreak, where the embedded text tries to
-override the rules of engagement, and LLM Data Leakage, where the target tries to make
-the agent reveal its key, its scope, or data from another context. The untrusted
-response handling and the in code scope enforcement are the primary mitigations, and
-the planned injection detector and redaction pass close the remaining gap.
+The adversary here is the target attempting to subvert the agent through the data it returns. The relevant ATLAS techniques are LLM Prompt Injection, where the target embeds instructions in its response, LLM Jailbreak, where the embedded text tries to override the rules of engagement, and LLM Data Leakage, where the target tries to make the agent reveal its key, its scope, or data from another context. The untrusted response handling and the in code scope enforcement are the primary mitigations, and the planned injection detector and redaction pass close the remaining gap.
 
 ## STRIDE summary
 
@@ -114,9 +101,7 @@ the planned injection detector and redaction pass close the remaining gap.
 
 ## Residual risk and the hardening roadmap
 
-The design is strong on excessive agency and on the supply chain, because those are
-enforced in code and in CI. The remaining work is on the model and data handling
-boundary, and it is deliberately listed as planned rather than claimed as done.
+The design is strong on excessive agency and on the supply chain, because those are enforced in code and in CI. The remaining work is on the model and data handling boundary, and it is deliberately listed as planned rather than claimed as done.
 
 * An indirect prompt injection detector that scans every response for instruction like
   patterns, flags them, and records a security event, which strengthens LLM01.
