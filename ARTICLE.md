@@ -1,6 +1,6 @@
 # Designing a Trustworthy Autonomous Penetration Testing Agent
 
-Most writing about AI agents is about capability, how much a model can now do on its own. The harder and more durable question is trust. If you are going to let a powerful and not fully predictable component plan and act on its own against a real system, the interesting work is not teaching it to act. It is deciding what it is allowed to do, what is guaranteed in code rather than hoped for in a prompt, and how to make sure that when it is wrong, it is wrong safely. Ariadne is a small autonomous penetration testing agent built to explore exactly that question.
+Most writing about AI agents is about capability, how much a model can now do on its own. The harder and more durable question is trust. If you are going to let a powerful and not fully predictable component plan and act on its own against a real system, the interesting work is not teaching it to act. It is deciding what it is allowed to do, what is guaranteed in code rather than hoped for in a prompt, and how to make sure that when it is wrong, it is wrong safely. Ariadne is a case study in applying security engineering principles to the design of autonomous agents. The penetration testing agent is the vehicle. The architectural principles are the real contribution.
 
 This article is about the architecture, not the model.
 

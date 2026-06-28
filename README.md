@@ -1,6 +1,6 @@
 # Ariadne
 
-Ariadne is an autonomous AI penetration tester, and underneath that it is an experiment in engineering trustworthy autonomy for offensive security tools. A language model plans and drives the engagement, but it operates inside a boundary it cannot cross, and that boundary, not the model, is the point.
+Ariadne is a case study in applying security engineering principles to the design of autonomous agents. The penetration testing agent is the vehicle, and the architectural principles are the real contribution. A language model plans and drives the engagement, but it operates inside a boundary it cannot cross, and that boundary, not the model, is the point.
 
 ```mermaid
 flowchart TD
