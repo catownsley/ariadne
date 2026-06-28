@@ -14,7 +14,7 @@ That reframing matters because it moves the work from prompt engineering, which 
 
 ```mermaid
 flowchart TD
-    OP[Operator] -->|objective and scope| PL
+    OP[Operator] -->|Objective and Scope| PL
     subgraph BOUND[The boundary the model cannot cross]
         PL[Planner, the language model] --> TB[Tool layer, typed and least privileged]
         TB --> SG[Scope guard, allowlist enforced in code]
@@ -22,8 +22,8 @@ flowchart TD
         CX[Context, the exploration graph] --> PL
         TB --> CX
     end
-    SG -->|in scope requests only| TGT[Authorized target]
-    TGT -->|untrusted responses, treated as data| TB
+    SG -->|In Scope Only| TGT[Authorized target]
+    TGT -->|Untrusted Response| TB
 ```
 
 ## Constrain in code, not in prompts
@@ -41,7 +41,7 @@ flowchart TD
     C --> D[HTTP, the request reaches the target]
     D --> E[Observation, response returns as untrusted data]
     E --> G[Context, the exploration graph updates]
-    G -->|where have I not been| A
+    G -->|Where Have I Not Been| A
 ```
 
 ## The audit trail and untrusted responses
@@ -67,7 +67,7 @@ flowchart TD
     O[Operator states the objective] --> P[Planner reflects and asks where it has not been]
     P --> T[Tool calls run concurrently through the safety layer]
     T --> U[Context update, the exploration graph and frontier grow]
-    U --> P
+    U -->|Frontier Still Has Work| P
     U --> F[Finding confirmed from the evidence and typed by class]
     F --> R[Report rendered from the typed findings]
 ```
