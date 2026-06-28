@@ -10,6 +10,20 @@ The contribution of Ariadne is not that a language model can send an HTTP reques
 
 That reframing matters because it moves the work from prompt engineering, which is brittle and model specific, to systems design, which is not.
 
+```mermaid
+flowchart TD
+    OP[Operator] -->|objective and scope| PL
+    subgraph BOUND[The boundary the model cannot cross]
+        PL[Planner, the language model] --> TB[Tool layer, typed and least privileged]
+        TB --> SG[Scope guard, allowlist enforced in code]
+        TB --> AU[(Append only audit log)]
+        CX[Context, the exploration graph] --> PL
+        TB --> CX
+    end
+    SG -->|in scope requests only| TGT[Authorized target]
+    TGT -->|untrusted responses, treated as data| TB
+```
+
 ## Constrain in code, not in prompts
 
 The first and most important decision is where the rules of engagement live. It is tempting to put them in the system prompt, to tell the model which hosts it may touch and ask it to behave. That is not a control. A prompt is a request, and a model can be confused, jailbroken, or fed a malicious instruction inside the very data it is analyzing.
@@ -17,6 +31,16 @@ The first and most important decision is where the rules of engagement live. It 
 In Ariadne the scope is data, and it is enforced in code. Every outbound action passes through a scope guard that parses the host and the port out of the URL and checks them against an allowlist before anything reaches the network. It parses rather than string matches, because a naive check on the raw URL can be fooled by tricks such as a host that only looks like the allowed one. The model never gets a network primitive directly. It only gets tools, and every tool routes through the guard. The result is a hard property. Even a fully subverted planner cannot reach a host that is not on the list, because the request does not leave the guard.
 
 The same idea bounds resource use. The guard enforces a per host request budget, and the tool layer paces and caps concurrency with a rate limit and a bounded semaphore, so a runaway loop or an injected instruction cannot turn the agent into a denial of service tool, against the target or against itself.
+
+```mermaid
+flowchart TD
+    A[Planner decides the next move from the map] --> B[Tool layer, the only way to act]
+    B --> C[Scope guard, allowlist enforced in code]
+    C --> D[HTTP, the request reaches the target]
+    D --> E[Observation, response returns as untrusted data]
+    E --> G[Context, the exploration graph updates]
+    G -->|where have I not been| A
+```
 
 ## The audit trail and untrusted responses
 
@@ -35,6 +59,16 @@ Autonomy without a ceiling is a liability. The planning loop is hard bounded by 
 A planner with only a flat list of findings is really a planner with memory, and it plans by asking what it should do next, which invites repetition and blind spots. Ariadne instead maintains an explicit exploration graph rooted at the entry point of the target. Each node is a location the agent has reached and everything it learned there, the parameters it found, the auth state, and which attack vectors it has tested.
 
 This turns planning into frontier search. After every step the agent is handed its map and its frontier, the set of places it has not yet been, and its decision becomes where have I not been rather than what should I do next. The state is explicit, which means it is auditable, it does not repeat work, and it could be paused and resumed. It also makes the implementation embody the idea behind the name. The graph is the thread, the record of where you have walked that lets you go deep and still find your way back.
+
+```mermaid
+flowchart TD
+    O[Operator states the objective] --> P[Planner reflects and asks where it has not been]
+    P --> T[Tool calls run concurrently through the safety layer]
+    T --> U[Context update, the exploration graph and frontier grow]
+    U --> P
+    U --> F[Finding confirmed from the evidence and typed by class]
+    F --> R[Report rendered from the typed findings]
+```
 
 ## Structured reflection
 
