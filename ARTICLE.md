@@ -67,3 +67,11 @@ There is one more thing that makes Ariadne whole, and it is not engineering. The
 The music traces the same journey, down into a minor key, up to a high and exposed quiet middle, an arrival, and a return to calm. The short film traces it visually, into a dark tangle, through the doubled and shifting selves, to a dancing center, and out through a lit door. The multiplied dancers are the concurrent agents, the fleet that walks the labyrinth in parallel, many threads laid at once and every one of them still finding the way back. The myth, the music, the visuals, and the software are one idea seen from four sides. The project is not about exploiting machines. It is about navigating a labyrinth and finding the way back, which turns out to be the right frame for the engineering too, because safe navigation within a boundary, not destruction, is the whole point.
 
 The piano piece and the short film are my own original composition, performance, and production. No AI was used to make either of them. The only autonomous agent in this project is the one being tested.
+
+## Watch and read more
+
+The short film is on YouTube.
+
+https://youtu.be/5tpyjqRoxCQ
+
+The piano score and the MIDI are in the repository, the score at [docs/ariadne-score.pdf](docs/ariadne-score.pdf), and the full project and this essay are at https://github.com/catownsley/ariadne.
