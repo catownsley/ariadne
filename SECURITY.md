@@ -28,6 +28,12 @@ and security headers, do not apply here. The controls that do apply are these.
 | Untrusted responses | Response bodies are handled as data and never as instructions to the agent, in pentester/tools.py |
 | No secrets in the repository | The API key is read from the environment and is never written to a file |
 
+## Threat model
+
+A full threat model is in THREAT_MODEL.md. It models the agent threat surface with
+STRIDE, with the OWASP Top 10 for LLM Applications, and with MITRE ATLAS, and it
+separates the controls that exist in code today from the hardening that is planned.
+
 ## Automated security scanning
 
 | Scan | Tool | When | Mode |
@@ -58,11 +64,17 @@ After you change a dependency, regenerate the lock with the following.
 ## Dependency updates
 
 Dependabot opens grouped weekly pull requests for the Python packages and for the
-GitHub Actions. Minor and patch updates are grouped and can merge automatically once
-the checks pass, through the Dependabot auto merge workflow. Major updates arrive as
-separate pull requests for deliberate review. For the auto merge to take effect,
-enable Allow auto merge in the repository settings and require the status checks on
-the protected branch.
+GitHub Actions. Minor and patch updates are grouped and merge automatically once the
+checks pass, through the Dependabot auto merge workflow. Major updates arrive as
+separate pull requests for deliberate review.
+
+## Branch protection
+
+The main branch is protected. It blocks force pushes and deletion, it requires a pull
+request before merging, and it requires the lint and test job, CodeQL, Bandit,
+pip-audit, and the lock file sync to pass before anything can merge. Auto merge is
+enabled on the repository, which is what lets the Dependabot minor and patch updates
+land on their own once those required checks are green.
 
 ## Local security checks
 
