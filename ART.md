@@ -1,6 +1,6 @@
 # The Art
 
-Ariadne is paired with an original piano piece and a short film, and they are as much the project as the code is. The myth, the music, the visuals, and the software are one story told from four sides, the navigation of a labyrinth and the thread that leads back out.
+Ariadne is paired with an original piano piece and a short film, and they are as much the project as the code is. The myth, the music, the visuals, and the software are one story told from four sides, the navigation of a labyrinth and the thread that leads back out. It is the idea that care, memory, and clear boundaries are what let you venture into something dangerous and still find your way home, in the myth, in the music, and in the code.
 
 <p align="center">
   <a href="https://youtu.be/5tpyjqRoxCQ"><img src="docs/ariadne-still.jpg" width="640" alt="Ariadne, the short film, click to watch"></a>

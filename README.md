@@ -106,7 +106,7 @@ The agent reached the finding by mapping the surface, asking where it had not be
 
 ## The labyrinth
 
-The name is not decoration. Ariadne is the one who gives the thread that lets you go deep into the labyrinth and find the way back, and that is exactly what the architecture does, it lets the agent go deep into a target and always return safely in bounds. The accompanying music walks the same path, down into a minor key, up to a high exposed middle, an arrival, and a quiet return. The short film walks it visually, and the multiplied dancers in it are the concurrent agents, many threads laid through the maze at once and every one still finding the way back. The project is not about exploiting machines, it is about navigating a labyrinth and finding the way back, told four ways at once.
+The name is not decoration. Ariadne is the one who gives the thread that lets you go deep into the labyrinth and find the way back, and that is exactly what the architecture does, it lets the agent go deep into a target and always return safely in bounds. Care, memory, and clear boundaries are what let you venture into something dangerous and still find your way home, and in the software those three are the safety model, the exploration graph and the audit log, and the scope enforced in code. The accompanying music walks the same path, down into a minor key, up to a high exposed middle, an arrival, and a quiet return. The short film walks it visually, and the multiplied dancers in it are the concurrent agents, many threads laid through the maze at once and every one still finding the way back. The project is not about exploiting machines, it is about navigating a labyrinth and finding the way back, told four ways at once.
 
 ## Read more
 
