@@ -92,7 +92,7 @@ The whole design is documented against recognized frameworks rather than asserte
 
 ## Why this is security systems design, not AI security
 
-The label AI security undersells what this is. The durable skill on display is security systems design. Look at the questions that did the work. What can this component reach. What is enforced in code rather than assumed in a prompt. Where are the trust boundaries. Is failure safe, bounded, and auditable. None of those questions belong to language models. They are the questions you ask of any powerful component you cannot fully trust, and they are the same whether the component is a language model, a third party service, or a piece of code you did not write.
+The label AI security undersells what this is. The durable skill on display is security systems design. This perspective comes from security engineering, where the central question is rarely whether a component is intelligent. It is whether the system remains trustworthy when that component fails or behaves unexpectedly. Look at the questions that did the work. What can this component reach. What is enforced in code rather than assumed in a prompt. Where are the trust boundaries. Is failure safe, bounded, and auditable. None of those questions belong to language models. They are the questions you ask of any powerful component you cannot fully trust, and they are the same whether the component is a language model, a third party service, or a piece of code you did not write.
 
 That is why this kind of thinking scales past any single model or framework. The model is the part that changes. The discipline of building a system that stays trustworthy even when a powerful component inside it cannot be trusted is the part that does not.
 
