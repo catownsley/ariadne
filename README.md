@@ -5,6 +5,27 @@ experiment in engineering trustworthy autonomy for offensive security tools. A
 language model plans and drives the engagement, but it operates inside a boundary it
 cannot cross, and that boundary, not the model, is the point.
 
+```mermaid
+flowchart TD
+    OP[Operator] -->|objective and scope| PL
+    subgraph BOUND[The boundary the model cannot cross]
+        PL[Planner, the language model] --> TB[Tool layer, typed and least privileged]
+        TB --> SG[Scope guard, allowlist enforced in code]
+        TB --> AU[(Append only audit log)]
+        CX[Context, the exploration graph] --> PL
+        TB --> CX
+    end
+    SG -->|in scope requests only| TGT[Authorized target]
+    TGT -->|untrusted responses, treated as data| TB
+```
+
+![A still from the original video that accompanies Ariadne](docs/ariadne.gif)
+
+Ariadne is paired with an original piano piece and a video. The myth, the music, the
+visuals, and the software are one story told from four sides, the navigation of a
+labyrinth and the thread that leads back out. A short loop from the video is above,
+and the still is in docs.
+
 ## What is interesting here
 
 The interesting part is not that a model can make HTTP requests. It is that the model
@@ -14,7 +35,7 @@ for in a prompt, every action passes through a safety layer and lands in an appe
 only audit log, the tools are few and typed, and the agent reasons over an explicit
 map of where it has and has not been.
 
-The planner is the one swappable part. It is Claude today and could be a different
+The planner is the one swappable part. It is one model today and could be a different
 model tomorrow, and the architecture does not change when it is swapped, because the
 guarantees live in the code around the model and not in the model itself. That is
 what gives the design a longer shelf life than any single model, and it is the real
@@ -27,8 +48,6 @@ Every action moves down through the layers and back up, and the model never touc
 the network directly.
 
 ```
-Claude
-  ↓
 Planner          decides the next move from the exploration map
   ↓
 Tool layer       the only way to act, typed and least privileged
@@ -59,27 +78,71 @@ flowchart TD
     F --> R[Report rendered from the typed findings]
 ```
 
-A real pass against OWASP Juice Shop went like this.
+## End to end
 
-1. Operator objective. Test the authorized target for web vulnerabilities.
-2. Planner decision. The map is empty, so the planner reflects that its goal is to
-   find the surface, its unknown is every path, and its hypothesis is that common API
-   routes exist. It calls discover_content.
-3. Tool calls. discover_content probes many paths at once through the concurrency
-   gate and reports that /api/Feedbacks exists.
-4. Context update. The exploration graph gains the /api/Feedbacks node, and the
-   frontier now shows that the endpoint has been reached but not read.
-5. Planner decision. Asking where it has not been, the planner calls http_request on
-   /api/Feedbacks and reads the response as data.
-6. Finding confirmation. The response returns every feedback record with no
-   authentication, including masked emails and content referencing wallet seed
-   phrases. The planner records an information disclosure finding, which carries
-   CWE-200 and its remediation automatically, and marks it confirmed.
-7. Report. When the frontier is covered the planner ends its turn, and the report is
-   rendered straight from the typed findings.
+Here is one engagement from the objective to the report.
 
-See [DESIGN.md](DESIGN.md) for the full architecture and
-[THREAT_MODEL.md](THREAT_MODEL.md) for the agent threat model.
+The target is a local OWASP Juice Shop at http://127.0.0.1:3000, the only host and
+port in scope.
+
+The agent's reasoning at the moment it found the issue, recorded by the reflect tool
+and written to the audit log, looked like this.
+
+```
+goal:            map the API surface and find an endpoint that leaks data
+evidence:        discover_content found /api/Feedbacks returning 200
+confidence:      medium
+unknowns:        whether /api/Feedbacks requires authentication
+next_hypothesis: the endpoint returns records to an unauthenticated caller
+```
+
+The resulting report, generated straight from the typed findings, looked like this.
+
+```
+# Penetration Test Report
+Target: http://127.0.0.1:3000
+
+Confirmed findings: 1
+Candidate findings: 0
+
+## [CONFIRMED] HIGH Sensitive Information Disclosure
+Weakness: CWE-200
+URL: http://127.0.0.1:3000/api/Feedbacks
+Evidence: the endpoint returned every feedback record without authentication,
+including partially masked emails and content referencing wallet seed phrases.
+Remediation: Require authentication and authorization on the endpoint, and remove
+sensitive data from responses that do not need to carry it.
+
+## Exploration map
+http://127.0.0.1:3000
+    / [200]
+      /api/Feedbacks [200]
+        sqli not tested
+        xss not tested
+        finding [confirmed] Sensitive Information Disclosure CWE-200
+```
+
+The agent reached the finding by mapping the surface, asking where it had not been,
+reading the endpoint, treating the response as data, and confirming the disclosure
+from the evidence, and the report wrote itself because the finding type already
+carried the weakness and the remediation.
+
+## The labyrinth
+
+The name is not decoration. Ariadne is the one who gives the thread that lets you go
+deep into the labyrinth and find the way back, and that is exactly what the
+architecture does, it lets the agent go deep into a target and always return safely
+in bounds. The accompanying music walks the same path, down into a minor key, up to a
+high exposed middle, an arrival, and a quiet return. The video walks it visually. The
+project is not about exploiting machines, it is about navigating a labyrinth and
+finding the way back, told four ways at once.
+
+## Read more
+
+The article [Designing a Trustworthy Autonomous Penetration Testing Agent](ARTICLE.md)
+covers the architectural choices in depth. See [DESIGN.md](DESIGN.md) for the
+architecture and diagrams and [THREAT_MODEL.md](THREAT_MODEL.md) for the agent threat
+model.
 
 ## Run
 
