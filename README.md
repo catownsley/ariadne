@@ -16,9 +16,9 @@ flowchart TD
     TGT -->|untrusted responses, treated as data| TB
 ```
 
-<p align="center"><img src="docs/ariadne.gif" alt="A loop from the original short film that accompanies Ariadne" width="480"></p>
+<p align="center"><a href="https://youtu.be/5tpyjqRoxCQ"><img src="docs/ariadne.gif" alt="A loop from the original short film that accompanies Ariadne, click to watch" width="480"></a></p>
 
-Ariadne is paired with an original piano piece and a short film, both my own original composition, performance, and production, made without any AI. The myth, the music, the visuals, and the software are one story told from four sides, the navigation of a labyrinth and the thread that leads back out. The loop above is from that film, and the still is in docs.
+Ariadne is paired with an original piano piece and a short film, both my own original composition, performance, and production, made without any AI. The myth, the music, the visuals, and the software are one story told from four sides, the navigation of a labyrinth and the thread that leads back out. The loop above is from that film. Watch the full film and read about the art at [The Art](ART.md).
 
 ## What is interesting here
 
@@ -110,7 +110,7 @@ The name is not decoration. Ariadne is the one who gives the thread that lets yo
 
 ## Read more
 
-The article [Designing a Trustworthy Autonomous Penetration Testing Agent](ARTICLE.md) covers the architectural choices in depth. See [DESIGN.md](DESIGN.md) for the architecture and diagrams and [THREAT_MODEL.md](THREAT_MODEL.md) for the agent threat model.
+The article [Designing a Trustworthy Autonomous Penetration Testing Agent](ARTICLE.md) covers the architectural choices in depth. See [DESIGN.md](DESIGN.md) for the architecture and diagrams, [THREAT_MODEL.md](THREAT_MODEL.md) for the agent threat model, and [The Art](ART.md) for the film and the music.
 
 ## Run
 
