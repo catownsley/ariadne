@@ -161,6 +161,16 @@ Credentials follow the same rule: the orchestrator holds the key, workers get
 short lived scoped tokens or call through it. High impact actions sit behind an
 approval gate that only certain agents may even request.
 
+Each agent also gets its own budgets, a request budget, a token and cost budget,
+and a step ceiling, allocated as a slice of the engagement total, so one worker
+cannot drain the whole run. For isolation stronger than the in code check alone,
+each agent can run in its own container with network egress filtering, which
+enforces the same scope at the operating system and network layer as defense in
+depth, so the boundary holds even if the in code check is ever bypassed. Every
+action an agent takes is logged with that agent's identity, so the audit trail
+attributes each request to a specific agent, which gives accountability and a way
+to spot a misbehaving one.
+
 ### Validation between agents
 
 In a fleet, one agent's output is the next one's input, and target responses flow
@@ -179,3 +189,8 @@ injection propagating between agents.
   which stops an agent being steered by injected content.
 * Sanitize and bound at each hop: type and range checks, length caps, strip
   control characters, before passing the value on.
+
+These controls map to recognized frameworks. Least privilege per agent is NIST
+AC-6, trusting no component implicitly is a zero trust stance applied between your
+own agents, and the risks being closed are OWASP LLM07 insecure tool and plugin
+design and OWASP LLM08 excessive agency.
