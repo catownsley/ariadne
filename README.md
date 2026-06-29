@@ -16,6 +16,8 @@ flowchart TD
     TGT -->|untrusted responses, treated as data| TB
 ```
 
+The diagram above shows the operator passing an objective and scope to the planner. The planner sits inside a boundary the model cannot cross, where it reaches a typed and least privileged tool layer, the tool layer routes through a scope guard whose allowlist is enforced in code and writes every action to an append only audit log, and a context exploration graph feeds back into the planner. Only in scope requests leave the guard to reach the authorized target, and the target returns untrusted responses to the tool layer as data.
+
 <p align="center"><a href="https://youtu.be/5tpyjqRoxCQ"><img src="docs/ariadne.gif" alt="A loop from the original short film that accompanies Ariadne, click to watch" width="480"></a></p>
 
 Ariadne is paired with an original piano piece and a short film, both my own original composition, performance, and production, made without any AI. The myth, the music, the visuals, and the software are one story told from four sides, the navigation of a labyrinth and the thread that leads back out. The loop above is from that film. Watch the full film and read about the art at [The Art](ART.md).
@@ -59,6 +61,8 @@ flowchart TD
     U --> F[Finding confirmed from the evidence and typed by class]
     F --> R[Report rendered from the typed findings]
 ```
+
+The diagram above shows the operator stating one objective to the planner. The planner reflects and asks where it has not been, its tool calls run concurrently through the safety layer, and a context update grows the exploration graph and frontier and loops back to the planner. The same update also produces a finding confirmed from the evidence and typed by class, which feeds the report rendered from the typed findings.
 
 ## End to end
 

@@ -28,7 +28,54 @@ flowchart TD
     CX --> RP["Reporter<br/>confirmed + candidate findings"]
 ```
 
+The diagram above shows the operator handing an objective and rules of engagement to the planner inside an agent loop of plan, act, observe, and reflect. The planner emits tool calls executed concurrently to the safety layer, the safety layer passes only in scope calls to the tool layer, the tool layer returns results to the context store, and the context store feeds knowledge back to the planner. Requests and responses between the tool layer and the OWASP Juice Shop target on 127.0.0.1 are treated as untrusted data, out of scope calls are blocked with a ScopeError, and the context store also feeds the reporter that lists confirmed and candidate findings.
+
 ## The four pillars
+
+This is the whole machine in one picture. The planner is left unshaded because
+it is the interchangeable and untrusted part, and each pillar gets its own
+grayscale band, the safety layer and its blocked branch for safe, the fan out
+under one semaphore for concurrent, the exploration graph for contextual, and the
+reflect step plus the typed findings and report for effective.
+
+```mermaid
+flowchart TD
+    OP["Operator<br/>Objective and Rules of Engagement"] --> PL
+
+    subgraph LOOP["Bounded Agent Loop"]
+        direction TB
+        PL["Planner<br/>Claude Opus 4.8, Adaptive Thinking<br/>Plans from the Frontier"]
+        RF["Structured Reflection<br/>Goal, Evidence, Confidence, Unknowns, Hypothesis"]
+        SG["Safety Layer<br/>ScopeGuard Allowlist in Code<br/>Append Only AuditLog, Per Host Budget, Rate Limit"]
+
+        TOOLS["Concurrent Tool Calls under a Bounded Semaphore<br/>discover_content, http_request, probe_sqli, probe_xss<br/>Fanned Out with asyncio.gather"]
+
+        CX["Exploration Graph<br/>Reached Nodes, Params, Auth State, Tested Vectors"]
+
+        PL --> RF
+        RF --> PL
+        PL -->|Tool Calls| SG
+        SG -->|In Scope Only| TOOLS
+        TOOLS -->|Results as Untrusted Data| CX
+        CX -->|Map and Frontier, Where Have I Not Been| PL
+    end
+
+    TOOLS <-->|Rate Limited Requests| TG[("Authorized Target<br/>127.0.0.1 Only")]
+    SG -.->|Out of Scope| BK["ScopeError, Blocked in Code"]
+    CX --> FN["Typed Findings<br/>SQLi CWE 89, XSS CWE 79, Information Disclosure<br/>Each Carries CWE and Remediation"]
+    FN --> RP["Report, Generated from the Typed Objects"]
+
+    classDef safe fill:#cccccc,stroke:#333333,color:#000000
+    classDef ctx fill:#e6e6e6,stroke:#333333,color:#000000
+    classDef eff fill:#b3b3b3,stroke:#333333,color:#000000
+    classDef conc fill:#f2f2f2,stroke:#333333,color:#000000
+    class SG,BK safe
+    class CX ctx
+    class RF,FN,RP eff
+    class TOOLS conc
+```
+
+The diagram above shows the whole agent as one loop. The operator gives an objective and rules of engagement to the planner. Inside a bounded agent loop the planner records a structured reflection and sends tool calls to the safety layer, the safety layer passes only in scope calls to the concurrent tool calls running under a bounded semaphore, those results return to the exploration graph as untrusted data, and the graph hands the planner its map and frontier so its next decision is where it has not been. Rate limited requests reach the authorized target on 127.0.0.1, out of scope calls are blocked in code with a ScopeError, and the exploration graph feeds typed findings that each carry their own weakness identifier and remediation and render the report. The four properties appear as shaded bands, safe for the safety layer and the blocked branch, concurrent for the tool node, contextual for the exploration graph, and effective for the reflection, the typed findings, and the report.
 
 * **Safe.** Scope is an allowlist of hosts and ports enforced in code in
   `ScopeGuard.check_url`, which runs before every request. The agent ingests
@@ -124,6 +171,33 @@ flowchart TD
     V -->|confirmed, schema validated| CTX["Canonical context<br/>orchestrator owned"]
     CTX --> REP["Reporter agent<br/>no network tools"]
 ```
+
+The diagram above shows the multi agent design. The orchestrator decomposes the engagement and dispatches units to a task queue. The queue feeds a recon agent with read only tools, which returns discovered endpoints to the queue, and the queue feeds several exploit agents. The exploit agents hand candidates to a validation agent that builds a sandboxed proof of concept, the validation agent writes confirmed and schema validated results to the canonical context owned by the orchestrator, and the canonical context feeds a reporter agent that has no network tools.
+
+### Orchestrator versus planner
+
+The orchestrator is not a bigger planner, it is a different kind of component, and
+keeping them distinct is what keeps the fleet trustworthy.
+
+* The planner plans the attack, the orchestrator plans the division of labor. The
+  planner reasons within one slice, deciding the next tool calls from its map and
+  frontier. The orchestrator splits the engagement into units, fans them out, and
+  owns the one canonical context.
+* The planner is intra agent, the reasoning inside a single agent. The orchestrator
+  is inter agent, the layer above the fleet. There is one orchestrator and many
+  planners, since every worker carries its own.
+* The planner is the untrusted component you constrain. The orchestrator is part of
+  the trust boundary that does the constraining. It allocates each worker a scoped
+  slice, its own budgets, and a short lived credential, and it validates every
+  handoff.
+* Because of that, the orchestrator must be trusted code, not a privileged free
+  model holding the master key. A free model in that seat just recreates the
+  untrusted planner problem one level up with more authority, so the decomposition
+  and validation live in code and any model used to plan the split stays as
+  constrained as the workers.
+
+The planner in this build is the `Agent` class in `agent.py`. The orchestrator is
+the next layer up, which the single agent loop generalizes into below.
 
 ### Marshalling several agents
 
